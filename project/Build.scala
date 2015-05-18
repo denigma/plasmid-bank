@@ -10,8 +10,6 @@ import com.typesafe.sbt.web.SbtWeb
 import SbtWeb.autoImport._
 import com.typesafe.sbt.web.Import.WebKeys
 
-import bintray._
-import BintrayPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt._
 
@@ -46,15 +44,17 @@ trait WebJarsVersions{
 }
 
 
-
 object Dependencies {
 
+  lazy val testing = Def.setting(Seq(
+    "com.lihaoyi" %%% "utest" % Versions.utest % "test"
+  ))
 
 	lazy val akka = Def.setting(Seq(
 			"com.typesafe.akka" %% "akka-http-scala-experimental" % Versions.akkaHttp,
 
 			"com.typesafe.akka" %% "akka-http-testkit-scala-experimental" % Versions.akkaHttp
-			))
+	))
 
 	lazy val templates = Def.setting(Seq(
 		"com.github.japgolly.scalacss" %%% "core" % Versions.scalaCSS,
@@ -63,32 +63,27 @@ object Dependencies {
 	))
 
 	lazy val sjsLibs= Def.setting(Seq(
-		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
-
-		"com.lihaoyi" %%% "utest" % Versions.utest % "test"
+		"org.scala-js" %%% "scalajs-dom" % Versions.dom
 	))
 
 	lazy val webjars= Def.setting(Seq(
-
 		"org.webjars" % "jquery" % Versions.jquery,
 
 		"org.webjars" % "Semantic-UI" % Versions.semanticUI,
 
 		"org.webjars" % "selectize.js" % Versions.selectize
 	))
-
-
-
-
 }
 
 object Build extends sbt.Build {
   
 	//settings for all the projects
 	lazy val commonSettings = Seq(
-	    scalaVersion := Versions.scala,
-	    organization := "club.diybio"
-	  )
+    scalaVersion := Versions.scala,
+	  organization := "club.diybio",
+    testFrameworks += new TestFramework("utest.runner.Framework"),
+    libraryDependencies ++= Dependencies.testing.value
+  )
 
 	//sbt-native-packager settings to run it as daemon
 	lazy val packageSettings = Seq(
@@ -98,17 +93,14 @@ object Build extends sbt.Build {
 		//serverLoading in Debian := Upstart
 	)
 
-
-	/**
-	code shared between backend and frontend
-	*/
-	lazy val transport = crossProject
+	// code shared between backend and frontend
+	lazy val shared = crossProject
 	  .crossType(CrossType.Pure)
-	  .in(file("transport"))  
+	  .in(file("shared"))
 	  .settings(commonSettings: _*)
-	  .settings(name := "transport")
-	lazy val transportJVM = transport.jvm
-	lazy val transportJS = transport.js
+	  .settings(name := "shared")
+	lazy val sharedJVM = shared.jvm
+	lazy val sharedJS = shared.js
 
 	// Scala-Js frontend
 	lazy val frontend = Project("frontend", file("frontend"))
@@ -118,21 +110,19 @@ object Build extends sbt.Build {
 		persistLauncher in Test := false,
 		testFrameworks += new TestFramework("utest.runner.Framework"),
 		libraryDependencies ++= Dependencies.sjsLibs.value++Dependencies.templates.value
-	) enablePlugins ScalaJSPlugin dependsOn transportJS
+	) enablePlugins ScalaJSPlugin dependsOn sharedJS
 
 	//backend project
-	lazy val root = Project("root", file("."))
-				.settings(Revolver.settings: _*)
-				.settings(commonSettings: _*)
-	 			.settings(packageSettings:_*)
+	lazy val root = Project("root", file("backend"))
+		.settings(Revolver.settings: _*)
+		.settings(commonSettings: _*)
+	 	.settings(packageSettings:_*)
 		.settings(
 			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
 					resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend, 
 				packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
 					watchSources <++= (watchSources in frontend)
-				).enablePlugins(SbtWeb) dependsOn transportJVM
+				).enablePlugins(SbtWeb) dependsOn sharedJVM
 		.aggregate(frontend)
-
-  
 }
