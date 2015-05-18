@@ -96,7 +96,7 @@ object Build extends sbt.Build {
 	// code shared between backend and frontend
 	lazy val shared = crossProject
 	  .crossType(CrossType.Pure)
-	  .in(file("backend/shared"))
+	  .in(file("shared"))
 	  .settings(commonSettings: _*)
 	  .settings(name := "shared")
 	lazy val sharedJVM = shared.jvm
@@ -113,7 +113,7 @@ object Build extends sbt.Build {
 	) enablePlugins ScalaJSPlugin dependsOn sharedJS
 
 	//backend project
-	lazy val root = Project("root", file("backend/server"))
+	lazy val root = Project("root", file("backend"))
 		.settings(Revolver.settings: _*)
 		.settings(commonSettings: _*)
 	 	.settings(packageSettings:_*)
