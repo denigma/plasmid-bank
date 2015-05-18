@@ -10,8 +10,6 @@ import com.typesafe.sbt.web.SbtWeb
 import SbtWeb.autoImport._
 import com.typesafe.sbt.web.Import.WebKeys
 
-import bintray._
-import BintrayPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt._
 
@@ -99,9 +97,7 @@ object Build extends sbt.Build {
 	)
 
 
-	/**
-	code shared between backend and frontend
-	*/
+	// code shared between backend and frontend
 	lazy val transport = crossProject
 	  .crossType(CrossType.Pure)
 	  .in(file("transport"))  
