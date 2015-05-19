@@ -1,22 +1,13 @@
-import sbt._
-import Keys._
-
-import org.scalajs.sbtplugin.ScalaJSPlugin
-import ScalaJSPlugin._
-import ScalaJSPlugin.autoImport._
-import org.scalajs.sbtplugin.cross.CrossProject
-
-import com.typesafe.sbt.web.SbtWeb
-import SbtWeb.autoImport._
-import com.typesafe.sbt.web.Import.WebKeys
-
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import sbt._
-
-import spray.revolver.RevolverPlugin._
-
 import com.typesafe.sbt.SbtNativePackager
-import SbtNativePackager.autoImport._
+import com.typesafe.sbt.SbtNativePackager.autoImport._
+import com.typesafe.sbt.web.SbtWeb
+import org.scalajs.sbtplugin.ScalaJSPlugin
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
+import sbt.Keys._
+import sbt._
+import spray.revolver.RevolverPlugin._
+import com.typesafe.sbt.web.SbtWeb.autoImport._
+
 
 object Versions extends WebJarsVersions
 {
@@ -72,6 +63,7 @@ object Dependencies {
 		"org.webjars" % "Semantic-UI" % Versions.semanticUI,
 
 		"org.webjars" % "selectize.js" % Versions.selectize
+
 	))
 }
 
@@ -113,16 +105,20 @@ object Build extends sbt.Build {
 	) enablePlugins ScalaJSPlugin dependsOn sharedJS
 
 	//backend project
-	lazy val root = Project("root", file("backend"))
-		.settings(Revolver.settings: _*)
-		.settings(commonSettings: _*)
-	 	.settings(packageSettings:_*)
+	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
+		.settings(packageSettings:_*)
 		.settings(
 			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
-					resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend, 
-				packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
-					watchSources <++= (watchSources in frontend)
-				).enablePlugins(SbtWeb) dependsOn sharedJVM
-		.aggregate(frontend)
+        mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
+        resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
+				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
+			watchSources <++= (watchSources in frontend),
+      (managedClasspath in Runtime) += (packageBin in Assets).value
+		) enablePlugins SbtWeb dependsOn sharedJVM
+
+	lazy val root = Project("root",file("."),settings = commonSettings)
+		.settings(
+			mainClass in Compile := (mainClass in backend in Compile).value
+    ) dependsOn backend aggregate(backend,frontend)
 }
