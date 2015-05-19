@@ -18,30 +18,16 @@ import scalacss.Defaults._
 import scala.concurrent.Future
 import akka.http.scaladsl.model.MediaTypes
 
-class MainActor  extends Actor with ActorLogging
+/**
+ * Main actor that encapsulates main application logic and starts the server
+ */
+class MainActor  extends Actor with ActorLogging with Routes
 {
   implicit val system = context.system
   implicit val materializer = ActorFlowMaterializer()
   implicit val executionContext = system.dispatcher
 
   val server: HttpExt = Http(context.system)
-  var serverSource: Source[IncomingConnection, Future[ServerBinding]] = null
-
-  def routes =
-    get {
-      pathSingleSlash {
-        complete {
-          HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`,  Index.template   ))
-        }
-      } ~
-        path("mystyles.css")(complete{
-          HttpResponse(  entity = HttpEntity(MediaTypes.`text/css`,  MyStyles.render   ))
-        }) ~
-      // Scala-JS puts them in the root of the resource directory per default,
-      // so that's where we pick them up
-      path("frontend-fastopt.js")(getFromResource("frontend-fastopt.js")) ~
-      path("frontend-launcher.js")(getFromResource("frontend-launcher.js"))
-    }
 
   override def receive: Receive = {
     case AppMessages.Start(port)=>
