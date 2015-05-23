@@ -9,32 +9,6 @@ import spray.revolver.RevolverPlugin._
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 
 
-object Versions extends WebJarsVersions
-{
-	val scala = "2.11.6"
-
-	val akkaHttp = "1.0-RC2"
-
-	val scalaTags =  "0.5.1"
-
-	val dom = "0.8.0"
-	
-	val utest = "0.3.1"
-
-	val scalaCSS = "0.2.0"
-
-}
-
-trait WebJarsVersions{
-
-	val jquery =  "2.1.3"
-
-	val semanticUI = "1.11.6"
-
-	val selectize = "0.12.0"
-}
-
-
 object Dependencies {
 
   lazy val testing = Def.setting(Seq(
@@ -54,7 +28,9 @@ object Dependencies {
 	))
 
 	lazy val sjsLibs= Def.setting(Seq(
-		"org.scala-js" %%% "scalajs-dom" % Versions.dom
+		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
+
+		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade
 	))
 
 	lazy val webjars= Def.setting(Seq(
@@ -119,6 +95,8 @@ object Build extends sbt.Build {
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(
-			mainClass in Compile := (mainClass in backend in Compile).value
+			mainClass in Compile := (mainClass in backend in Compile).value,
+			libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite cross CrossVersion.full,
+			initialCommands in console := """ammonite.repl.Repl.run("")"""
     ) dependsOn backend aggregate(backend,frontend)
 }

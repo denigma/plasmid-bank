@@ -33,15 +33,19 @@ class MainActor  extends Actor with ActorLogging with Routes
     case AppMessages.Start(port)=>
       val host = "localhost"
       server.bindAndHandle(routes, host, port)
-
-      //serverSource = server.bind(interface = host, port)
-      //serverSource.runForeach {      connection =>   connection.handleWithAsyncHandler(futureHandler)      }
       log.info(s"starting server at $host:$port")
 
 
-    case AppMessages.Stop=>
-      log.info("stopping")
-
+    case AppMessages.Stop=>  onStop()
   }
+
+  def onStop() = {
+    log.info("Main actor has been stoped...")
+  }
+
+  override def postStop() = {
+    onStop()
+  }
+
 
 }

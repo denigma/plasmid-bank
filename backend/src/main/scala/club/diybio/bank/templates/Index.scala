@@ -21,10 +21,12 @@ object Index {
 
   lazy val MENU = div(`class` := "ui labeled green icon menu",items  )
   lazy val MAIN = div(`class` := "ui green segment",h1("Hello World!"),
-    p(`class`:="desc","This project will be used to build a plasmid bank!")
+    p(id:="hello",`class`:="desc","here will be hello world!")
   )
 
-  lazy val scripts = Seq(  script(src:="frontend-fastopt.js"),  script(src:="frontend-launcher.js")
+  lazy val scripts = Seq(
+    script(src:="resources/frontend-fastopt.js"),
+    script(src:="resources/frontend-launcher.js")
   )
 
   lazy val BODY = body( MENU, MAIN, div(scripts )
