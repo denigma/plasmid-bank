@@ -76,6 +76,7 @@ object Build extends sbt.Build {
 		.settings(
 		persistLauncher in Compile := true,
 		persistLauncher in Test := false,
+		jsDependencies += RuntimeDOM % "test",
 		testFrameworks += new TestFramework("utest.runner.Framework"),
 		libraryDependencies ++= Dependencies.sjsLibs.value++Dependencies.templates.value
 	) enablePlugins ScalaJSPlugin dependsOn sharedJS
