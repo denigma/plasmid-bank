@@ -16,9 +16,14 @@ object Dependencies {
   ))
 
 	lazy val akka = Def.setting(Seq(
-			"com.typesafe.akka" %% "akka-http-scala-experimental" % Versions.akkaHttp,
 
-			"com.typesafe.akka" %% "akka-http-testkit-scala-experimental" % Versions.akkaHttp
+		"com.typesafe.akka" %% "akka-stream-experimental" % Versions.akkaHttp,
+
+		"com.typesafe.akka" %% "akka-http-core-experimental" % Versions.akkaHttp,
+
+		"com.typesafe.akka" %% "akka-http-experimental" % Versions.akkaHttp,
+
+		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp
 	))
 
 	lazy val templates = Def.setting(Seq(

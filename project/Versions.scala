@@ -2,7 +2,7 @@ object Versions extends WebJarsVersions with ScalaJSVersions
 {
 	val scala = "2.11.6"
 
-	val akkaHttp = "1.0-RC2"
+	val akkaHttp = "1.0-RC3"
 
 	val utest = "0.3.1"
 
@@ -18,6 +18,8 @@ trait ScalaJSVersions {
 	val scalaTags =  "0.5.1"
 
 	val scalaCSS = "0.2.0"
+
+	val binding = "0.7.13"
 
 }
 
