@@ -1,5 +1,5 @@
-# plasmid-bank
-===============
+plasmid-bank
+============
 
 This is plasmid bank sources.
 What we want to achieve is a decentralised webservice to share:
@@ -21,6 +21,6 @@ The project contains 3 subprojects::
 To run the project you must have SBT ( http://www.scala-sbt.org/ ) installed.
 
 To run project::
-    sbt //to open sbt console
-    re-start //to run it
-    Open localhost:1234 to see the result, it reloads whenever any sources are changed
+    sbt //to opens sbt console
+    re-start //Use this command **instead of** run to run the app
+    Open localhost:1234 to see the result, it should reload whenever any sources are changed

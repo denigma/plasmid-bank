@@ -8,11 +8,14 @@ import scala.util.Try
 import scala.scalajs.js
 import org.scalajs.dom
 
+import org.querki.jquery
+import jquery._
+
 object FrontEnd extends js.JSApp
 {
 
   def main(): Unit = {
-    dom.alert("hello world!")
+    $("#hello").text("Hello Plasmid Bank!")
   }
 
 }
