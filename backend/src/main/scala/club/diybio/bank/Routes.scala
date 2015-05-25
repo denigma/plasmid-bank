@@ -1,4 +1,6 @@
 package club.diybio.bank
+
+
 import akka.http.scaladsl.model.{MediaTypes, _}
 import akka.http.scaladsl.server.Directives._
 import club.diybio.bank.templates.{Index, MyStyles}
@@ -8,9 +10,10 @@ import scalacss.Defaults._
 /**
  * Trait that countains routes and handlers
  */
-trait Routes {
+trait Routes extends Auth with PJax{
 
   lazy val webjarsPrefix = "lib"
+
   lazy val resourcePrefix = "resources"
 
   def index =  pathSingleSlash {
@@ -21,19 +24,20 @@ trait Routes {
     complete  {
       HttpResponse(  entity = HttpEntity(MediaTypes.`text/css`,  MyStyles.render   ))   }
   }
-/*
-  def loadScalajs =  path("frontend-fastopt.js")(getFromResource("frontend-fastopt.js")) ~
-    path("frontend-launcher.js")(getFromResource("frontend-launcher.js"))*/
 
   def loadResources = pathPrefix(resourcePrefix~Slash) {
     getFromResourceDirectory("")
   }
 
-
-
   def webjars =pathPrefix(webjarsPrefix ~ Slash)  {  getFromResourceDirectory(webjarsPrefix)  }
 
-
   def routes = index ~  webjars ~ mystyles ~ loadResources
+
+}
+
+//here will be pjax implementation in some time
+trait PJax {
+
+  def isPjax(req:HttpRequest) = req.headers.exists(h=>h.lowercaseName()=="x-pjax")
 
 }
