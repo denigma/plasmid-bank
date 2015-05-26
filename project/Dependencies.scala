@@ -33,7 +33,9 @@ object Dependencies {
 
 		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade, //scalajs facade for jQuery + jQuery extensions
 
-		"org.querki" %%% "querki-jsext" % Versions.jsext //useful sclalajs extensions
+		"org.querki" %%% "querki-jsext" % Versions.jsext, //useful sclalajs extensions
+
+		"org.denigma" %%% "binding" % Versions.binding
 	))
 
 	//dependencies on javascript libs
