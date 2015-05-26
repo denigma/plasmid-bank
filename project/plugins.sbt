@@ -7,3 +7,5 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.0.0")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.3")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.1.1")
+
+addSbtPlugin("com.gilt" % "sbt-dependency-graph-sugar" % "0.7.5")

@@ -49,8 +49,8 @@ object Dependencies {
 
 	//common purpose libs
 	lazy val commonShared = Def.setting(Seq(
-		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens, //nice lenses for case classes
+		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens//, //nice lenses for case classes
 
-		"com.lihaoyi" %%% "autowire" % Versions.autowire
+		//"com.lihaoyi" %%% "autowire" % Versions.autowire
 	))
 }

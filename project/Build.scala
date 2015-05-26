@@ -1,5 +1,3 @@
-import _root_.play.twirl.sbt.SbtTwirl
-import com.typesafe.sbt.SbtNativePackager
 import com.typesafe.sbt.SbtNativePackager.autoImport._
 import com.typesafe.sbt.web.SbtWeb
 import org.scalajs.sbtplugin.ScalaJSPlugin
@@ -7,6 +5,8 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import spray.revolver.RevolverPlugin._
+import play.twirl.sbt._
+import play.twirl.sbt.SbtTwirl.autoImport._
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 
 
@@ -16,7 +16,9 @@ object Build extends sbt.Build {
 	lazy val commonSettings = Seq(
     scalaVersion := Versions.scala,
 	  organization := "club.diybio",
-    testFrameworks += new TestFramework("utest.runner.Framework"),
+		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"),
+    resolvers += sbt.Resolver.bintrayRepo("inthenow", "releases"),
+		testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
 		updateOptions := updateOptions.value.withCachedResolution(true) //to speed up dependency resolution
   )

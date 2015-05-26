@@ -16,7 +16,7 @@ trait ScalaJSVersions {
 
 	val dom = "0.8.0"
 
-	val binding = "0.7.12"
+	val binding = "0.8.0"
 
 }
 
