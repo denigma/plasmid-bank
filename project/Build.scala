@@ -1,3 +1,4 @@
+import _root_.play.twirl.sbt.SbtTwirl
 import com.typesafe.sbt.SbtNativePackager
 import com.typesafe.sbt.SbtNativePackager.autoImport._
 import com.typesafe.sbt.web.SbtWeb
@@ -8,55 +9,6 @@ import sbt._
 import spray.revolver.RevolverPlugin._
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 
-
-object Dependencies {
-
-	//libs for testing
-  lazy val testing = Def.setting(Seq(
-    "com.lihaoyi" %%% "utest" % Versions.utest % "test"
-  ))
-
-	//akka-related libs
-	lazy val akka = Def.setting(Seq(
-
-		"com.typesafe.akka" %% "akka-stream-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-core-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp
-	))
-
-	lazy val templates = Def.setting(Seq(
-		"com.github.japgolly.scalacss" %%% "core" % Versions.scalaCSS,
-
-		"com.github.japgolly.scalacss" %%% "ext-scalatags" %  Versions.scalaCSS
-	))
-
-	//scalajs libs
-	lazy val sjsLibs= Def.setting(Seq(
-		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
-
-		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade //scalajs facade for jQuery + jQuery extensions
-	))
-
-	//dependencies on javascript libs
-	lazy val webjars= Def.setting(Seq(
-		"org.webjars" % "jquery" % Versions.jquery,
-
-		"org.webjars" % "Semantic-UI" % Versions.semanticUI, //css theme, similar to bootstrap
-
-		"org.webjars" % "selectize.js" % Versions.selectize //select control
-	))
-
-	//common purpose libs
-	lazy val commonShared = Def.setting(Seq(
-		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens, //nice lenses for case classes
-
-		"com.lihaoyi" %%% "autowire" % Versions.autowire
-	))
-}
 
 object Build extends sbt.Build {
   
@@ -108,7 +60,7 @@ object Build extends sbt.Build {
 				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
 			watchSources <++= (watchSources in frontend),
       (managedClasspath in Runtime) += (packageBin in Assets).value
-		) enablePlugins SbtWeb dependsOn sharedJVM
+		).enablePlugins(SbtTwirl,SbtWeb) dependsOn sharedJVM
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(

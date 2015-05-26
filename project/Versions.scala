@@ -12,6 +12,8 @@ trait ScalaJSVersions {
 
 	val jqueryFacade = "0.5"
 
+	val jsext = "0.5"
+
 	val dom = "0.8.0"
 
 	val binding = "0.7.13"
