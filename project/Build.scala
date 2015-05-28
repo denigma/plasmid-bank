@@ -48,11 +48,7 @@ object Dependencies {
 	))
 
 	lazy val rdf = Def.setting(Seq(
-    "org.w3" %%% "banana-rdf" % Versions.bananaRdf,
-
-    "org.w3" %% "banana-sesame" % Versions.bananaRdf,
-
-    "org.openrdf.sesame" % "sesame-runtime" % Versions.sesame
+    "org.w3" %% "banana-sesame" % Versions.bananaRdf
   ))
 }
 
@@ -92,7 +88,7 @@ object Build extends sbt.Build {
 		jsDependencies += RuntimeDOM % "test",
 		testFrameworks += new TestFramework("utest.runner.Framework"),
 		libraryDependencies ++= Dependencies.sjsLibs.value++Dependencies.templates.value
-	) enablePlugins ScalaJSPlugin dependsOn sharedJS
+	) enablePlugins ScalaJSPlugin dependsOn sharedJS aggregate sharedJS
 
 	//backend project
 	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
@@ -105,12 +101,12 @@ object Build extends sbt.Build {
 				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
 			watchSources <++= (watchSources in frontend),
       (managedClasspath in Runtime) += (packageBin in Assets).value
-		) enablePlugins SbtWeb dependsOn sharedJVM
+		) enablePlugins SbtWeb dependsOn sharedJVM aggregate sharedJVM
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(
 			mainClass in Compile := (mainClass in backend in Compile).value,
 			libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite cross CrossVersion.full,
 			initialCommands in console := """ammonite.repl.Repl.run("")"""
-    ) dependsOn backend aggregate(backend,frontend,sharedJVM,sharedJS)
+    ) dependsOn backend aggregate(backend,frontend)
 }
