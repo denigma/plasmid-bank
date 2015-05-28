@@ -32,13 +32,13 @@ object Dependencies {
 		"com.github.japgolly.scalacss" %%% "ext-scalatags" %  Versions.scalaCSS
 	))
 
-	lazy val sjsLibs= Def.setting(Seq(
+	lazy val sjsLibs = Def.setting(Seq(
 		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
 
 		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade
 	))
 
-	lazy val webjars= Def.setting(Seq(
+	lazy val webjars = Def.setting(Seq(
 		"org.webjars" % "jquery" % Versions.jquery,
 
 		"org.webjars" % "Semantic-UI" % Versions.semanticUI,
@@ -46,6 +46,14 @@ object Dependencies {
 		"org.webjars" % "selectize.js" % Versions.selectize
 
 	))
+
+	lazy val rdf = Def.setting(Seq(
+    "org.w3" %%% "banana-rdf" % Versions.bananaRdf,
+
+    "org.w3" %% "banana-sesame" % Versions.bananaRdf,
+
+    "org.openrdf.sesame" % "sesame-runtime" % Versions.sesame
+  ))
 }
 
 object Build extends sbt.Build {
@@ -90,7 +98,7 @@ object Build extends sbt.Build {
 	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
 		.settings(packageSettings:_*)
 		.settings(
-			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value,
+			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value++Dependencies.rdf.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
         mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
         resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
@@ -104,5 +112,5 @@ object Build extends sbt.Build {
 			mainClass in Compile := (mainClass in backend in Compile).value,
 			libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite cross CrossVersion.full,
 			initialCommands in console := """ammonite.repl.Repl.run("")"""
-    ) dependsOn backend aggregate(backend,frontend)
+    ) dependsOn backend aggregate(backend,frontend,sharedJVM,sharedJS)
 }
