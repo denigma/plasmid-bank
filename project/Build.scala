@@ -16,8 +16,7 @@ object Build extends sbt.Build {
 	lazy val commonSettings = Seq(
     scalaVersion := Versions.scala,
 	  organization := "club.diybio",
-		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"),
-    resolvers += sbt.Resolver.bintrayRepo("inthenow", "releases"),
+		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
 		testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
 		updateOptions := updateOptions.value.withCachedResolution(true) //to speed up dependency resolution

@@ -40,7 +40,6 @@ object Dependencies {
 
 	//dependencies on javascript libs
 	lazy val webjars= Def.setting(Seq(
-		"org.webjars" % "jquery" % Versions.jquery,
 
 		"org.webjars" % "Semantic-UI" % Versions.semanticUI, //css theme, similar to bootstrap
 
@@ -50,7 +49,5 @@ object Dependencies {
 	//common purpose libs
 	lazy val commonShared = Def.setting(Seq(
 		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens//, //nice lenses for case classes
-
-		//"com.lihaoyi" %%% "autowire" % Versions.autowire
 	))
 }
