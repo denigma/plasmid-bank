@@ -1,4 +1,3 @@
-import com.typesafe.sbt.SbtNativePackager
 import com.typesafe.sbt.SbtNativePackager.autoImport._
 import com.typesafe.sbt.web.SbtWeb
 import org.scalajs.sbtplugin.ScalaJSPlugin
@@ -6,51 +5,10 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import spray.revolver.RevolverPlugin._
+import play.twirl.sbt._
+import play.twirl.sbt.SbtTwirl.autoImport._
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 
-
-object Dependencies {
-
-  lazy val testing = Def.setting(Seq(
-    "com.lihaoyi" %%% "utest" % Versions.utest % "test"
-  ))
-
-	lazy val akka = Def.setting(Seq(
-
-		"com.typesafe.akka" %% "akka-stream-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-core-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp
-	))
-
-	lazy val templates = Def.setting(Seq(
-		"com.github.japgolly.scalacss" %%% "core" % Versions.scalaCSS,
-
-		"com.github.japgolly.scalacss" %%% "ext-scalatags" %  Versions.scalaCSS
-	))
-
-	lazy val sjsLibs = Def.setting(Seq(
-		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
-
-		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade
-	))
-
-	lazy val webjars = Def.setting(Seq(
-		"org.webjars" % "jquery" % Versions.jquery,
-
-		"org.webjars" % "Semantic-UI" % Versions.semanticUI,
-
-		"org.webjars" % "selectize.js" % Versions.selectize
-
-	))
-
-	lazy val rdf = Def.setting(Seq(
-    "org.w3" %% "banana-sesame" % Versions.bananaRdf
-  ))
-}
 
 object Build extends sbt.Build {
   
@@ -58,8 +16,10 @@ object Build extends sbt.Build {
 	lazy val commonSettings = Seq(
     scalaVersion := Versions.scala,
 	  organization := "club.diybio",
-    testFrameworks += new TestFramework("utest.runner.Framework"),
-    libraryDependencies ++= Dependencies.testing.value
+		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
+		testFrameworks += new TestFramework("utest.runner.Framework"),
+    libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
+		updateOptions := updateOptions.value.withCachedResolution(true) //to speed up dependency resolution
   )
 
 	//sbt-native-packager settings to run it as daemon
@@ -101,12 +61,12 @@ object Build extends sbt.Build {
 				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
 			watchSources <++= (watchSources in frontend),
       (managedClasspath in Runtime) += (packageBin in Assets).value
-		) enablePlugins SbtWeb dependsOn sharedJVM aggregate sharedJVM
+		) enablePlugins(SbtTwirl,SbtWeb) dependsOn sharedJVM aggregate sharedJVM
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(
 			mainClass in Compile := (mainClass in backend in Compile).value,
 			libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite cross CrossVersion.full,
-			initialCommands in console := """ammonite.repl.Repl.run("")"""
+			initialCommands in console := """ammonite.repl.Repl.run("")""" //better console
     ) dependsOn backend aggregate(backend,frontend)
 }
