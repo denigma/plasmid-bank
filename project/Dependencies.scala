@@ -26,7 +26,7 @@ object Dependencies {
 
 		"com.github.japgolly.scalacss" %%% "ext-scalatags" %  Versions.scalaCSS
 	))
-
+  
 	//scalajs libs
 	lazy val sjsLibs= Def.setting(Seq(
 		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
@@ -50,4 +50,9 @@ object Dependencies {
 	lazy val commonShared = Def.setting(Seq(
 		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens//, //nice lenses for case classes
 	))
+
+	lazy val rdf = Def.setting(Seq(
+    "org.w3" %% "banana-sesame" % Versions.bananaRdf
+  ))
+
 }
