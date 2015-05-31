@@ -1,5 +1,6 @@
 package club.diybio.bank.templates
 
+import scala.language.postfixOps
 
 import scalacss.Defaults._
 
