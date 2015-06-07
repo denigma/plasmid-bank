@@ -1,3 +1,5 @@
 package club.diybio.bank.domain.bio
 
-case class Resistance(label: String)
+import club.diybio.bank.domain.Labeled
+
+case class Resistance(label: String) extends Labeled

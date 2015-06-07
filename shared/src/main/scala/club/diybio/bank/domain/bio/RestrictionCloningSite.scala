@@ -1,5 +1,5 @@
 package club.diybio.bank.domain.bio
 
 case class RestrictionCloningSite(
-  site: DNASequence,
+  site: DNASeq,
   destroyed: Option[Boolean])

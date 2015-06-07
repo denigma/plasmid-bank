@@ -1,32 +1,50 @@
 package club.diybio.bank.domain.bio
 
+import org.openrdf.repository.RepositoryConnection
+import org.openrdf.repository.sail.SailRepository
+import org.openrdf.sail.memory.MemoryStore
 import utest._
 import utest.framework.TestSuite
 import org.w3.banana._, sesame._
 
 object BananaPlasmidVectorRepositoryTest extends TestSuite {
-  val rdfOps = RDFOps[Sesame]
-  import rdfOps._
+  val sesameRepo = new SailRepository(new MemoryStore())
+  sesameRepo.initialize()
+
+  val repository = new BananaPlasmidVectorRepository[Sesame, RepositoryConnection](sesameRepo.getConnection)
   
   val tests = TestSuite {
     "it should retrieve plasmid by id" - {
-      val foaf = FOAFPrefix[Sesame]
+      val growthInfo = BacteriaGrowthInfo(
+        resistance = Set(Resistance("ampicillin")),
+        temperature = 37.0,
+        strains = Set(Strain("ecoli")),
+        copyNumber = HIGH_NUMBER
+      )
 
-      val graph = (
-        URI("http://bank.diybio.club/plasmid/testid")
-        -- foaf.name ->- "Test plasmid"
-      ).graph
+      val sequenceInfo = SequenceInfo(
+        full = Some(DNASeq("AAAAAA")),
+        partials = Set(DNASeq("CCCCC"), DNASeq("TTTTT"))
+      )
 
-      val repository = new BananaPlasmidVectorRepository[Sesame, Sesame#Graph](graph)
+      val plasmid = PlasmidVector(
+        id = "some_id",
+        backbone = Some("backbone_id"),
+        comment = Some("comment"),
+        size = 100,
+        expressionType = Set(MAMMALIAN, BACTERIAL),
+        selectableMarker = Set(SelectableMarker("URA")),
+        growthInfo = growthInfo,
+        sequenceInfo = sequenceInfo,
+        cloningInfo = None,
+        insert = None)
 
-      val plasmid = repository.getById("testid")
-
-      assert(plasmid.get == PlasmidVector("testid", "Test plasmid"))
+      repository.upsert(plasmid)
+      assert(repository.getById(plasmid.id).get == plasmid)
     }
 
     "it should return None if queried with unknown id" - {
-      val repository = new BananaPlasmidVectorRepository[Sesame, Sesame#Graph](emptyGraph)
-      assert(repository.getById("absentid").isEmpty)
+      assert(repository.getById("absent_id").isEmpty)
     }
   }
 }

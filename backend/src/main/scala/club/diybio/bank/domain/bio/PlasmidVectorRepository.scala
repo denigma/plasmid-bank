@@ -1,5 +1,7 @@
 package club.diybio.bank.domain.bio
 
 trait PlasmidVectorRepository {
-  def getById(id: PlasmidVector.PlasmidId): Option[PlasmidVector]
+  def getById(id: PlasmidVectorId): Option[PlasmidVector]
+
+  def upsert(plasmidVector: PlasmidVector)
 }

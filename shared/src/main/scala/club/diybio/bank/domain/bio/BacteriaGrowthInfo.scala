@@ -2,6 +2,6 @@ package club.diybio.bank.domain.bio
 
 case class BacteriaGrowthInfo(
   resistance: Set[Resistance],
-  temperature: Float,
+  temperature: Double,
   strains: Set[Strain],
   copyNumber: CopyNumber)

@@ -1,3 +1,5 @@
 package club.diybio.bank.domain.bio
 
-case class Strain(label: String)
+import club.diybio.bank.domain.Labeled
+
+case class Strain(label: String) extends Labeled
