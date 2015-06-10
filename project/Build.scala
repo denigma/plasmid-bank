@@ -19,7 +19,8 @@ object Build extends sbt.Build {
 		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
 		testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
-		updateOptions := updateOptions.value.withCachedResolution(true) //to speed up dependency resolution
+		updateOptions := updateOptions.value.withCachedResolution(true), //to speed up dependency resolution
+		scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
 	//sbt-native-packager settings to run it as daemon
@@ -48,20 +49,20 @@ object Build extends sbt.Build {
 		jsDependencies += RuntimeDOM % "test",
 		testFrameworks += new TestFramework("utest.runner.Framework"),
 		libraryDependencies ++= Dependencies.sjsLibs.value++Dependencies.templates.value
-	) enablePlugins ScalaJSPlugin dependsOn sharedJS
+	) enablePlugins ScalaJSPlugin dependsOn sharedJS aggregate sharedJS
 
 	//backend project
 	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
 		.settings(packageSettings:_*)
 		.settings(
-			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value,
+			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value++Dependencies.rdf.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
         mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
         resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
 				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
 			watchSources <++= (watchSources in frontend),
       (managedClasspath in Runtime) += (packageBin in Assets).value
-		).enablePlugins(SbtTwirl,SbtWeb) dependsOn sharedJVM
+		) enablePlugins(SbtTwirl,SbtWeb) dependsOn sharedJVM aggregate sharedJVM
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(
