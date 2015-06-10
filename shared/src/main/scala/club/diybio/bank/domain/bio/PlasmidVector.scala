@@ -1,7 +1,13 @@
 package club.diybio.bank.domain.bio
 
-object PlasmidVector {
-  type PlasmidId = String
-}
-
-case class PlasmidVector(id: PlasmidVector.PlasmidId, name: String)
+case class PlasmidVector(
+  id: PlasmidVectorId,
+  backbone: Option[PlasmidVectorId],
+  comment: Option[String],
+  size: Int,
+  expressionType: Set[TargetSpecie],
+  selectableMarker: Set[SelectableMarker],
+  growthInfo: BacteriaGrowthInfo,
+  sequenceInfo: SequenceInfo,
+  cloningInfo: Option[RestrictionEnzymeCloningInfo],
+  insert: Option[PlasmidInsert])

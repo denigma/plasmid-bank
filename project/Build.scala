@@ -19,7 +19,8 @@ object Build extends sbt.Build {
 		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
 		testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
-		updateOptions := updateOptions.value.withCachedResolution(true) //to speed up dependency resolution
+		updateOptions := updateOptions.value.withCachedResolution(true), //to speed up dependency resolution
+		scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
 	//sbt-native-packager settings to run it as daemon
