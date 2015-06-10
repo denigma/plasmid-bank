@@ -1,4 +1,4 @@
-object Versions extends WebJarsVersions with ScalaJSVersions with SharedVersions
+object Versions extends WebJarsVersions with ScalaJSVersions with RdfVersions with SharedVersions
 {
 	val scala = "2.11.6"
 
@@ -38,8 +38,7 @@ trait SharedVersions
 	val utest = "0.3.1"
 }
 
-
-trait WebJarsVersions{
+trait WebJarsVersions {
 
 	val jquery =  "2.1.3"
 
@@ -48,3 +47,9 @@ trait WebJarsVersions{
 	val selectize = "0.12.0"
 }
 
+trait RdfVersions {
+
+  val bananaRdf = "0.8.1"
+
+  val sesame = "2.8.3"
+}
