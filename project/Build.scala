@@ -55,7 +55,11 @@ object Build extends sbt.Build {
 	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
 		.settings(packageSettings:_*)
 		.settings(
-			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value++Dependencies.rdf.value,
+			libraryDependencies ++= Dependencies.akka.value
+						++Dependencies.templates.value
+						++Dependencies.webjars.value
+						++Dependencies.rdf.value
+						++Dependencies.otherJvm.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
         mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
         resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
