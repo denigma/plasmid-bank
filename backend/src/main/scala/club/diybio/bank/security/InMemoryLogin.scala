@@ -25,4 +25,6 @@ class InMemoryLogin extends LoginManager {
   }
 
   def findHash(username: String): Future[Option[String]]  = Future.successful(users.get(username))
+
+  def cleanCache() = users = Map.empty
 }

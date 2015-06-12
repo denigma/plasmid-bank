@@ -2,20 +2,20 @@ package club.diybio.bank
 
 
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
-import club.diybio.bank.templates.{Index, MyStyles}
+import akka.http.scaladsl.server.Directives
+import club.diybio.bank.security.{Auth, InMemoryLogin, LoginManager}
+import club.diybio.bank.templates.MyStyles
 import play.twirl.api.Html
 
 import scalacss.Defaults._
 
-/**
- * Trait that countains routes and handlers
- */
-trait Routes extends Auth with PJax{
+class Router extends Auth with PJax with Directives{
 
   lazy val webjarsPrefix = "lib"
 
   lazy val resourcePrefix = "resources"
+
+  val loginManager:LoginManager = new InMemoryLogin //temporal solution until we will add user repository
 
   def index =  pathSingleSlash{ctx=>
     ctx.complete {
@@ -53,13 +53,6 @@ trait Routes extends Auth with PJax{
     HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`, cont))
   }
 
-  def routes = index ~  webjars ~ mystyles ~ test ~ loadResources
+  def routes = index ~  webjars ~ mystyles ~ logins ~ test ~ loadResources
 }
 
-trait PJax {
-
-  def isPjax(req:HttpRequest) = req.headers.exists(h=>h.lowercaseName()=="x-pjax")
-
-  def loadPage(content:Html)(implicit req:HttpRequest): HttpResponse //should load page in a pjax way
-
-}
