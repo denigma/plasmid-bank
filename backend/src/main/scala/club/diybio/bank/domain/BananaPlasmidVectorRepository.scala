@@ -1,10 +1,9 @@
-package club.diybio.bank.domain.bio
+package club.diybio.bank.domain
 
 import scala.util.{Failure, Success, Try}
 
-import club.diybio.bank.domain.Labeled
-import org.w3.banana.binder.{FromLiteral, ToLiteral, PGBinder, RecordBinder}
-import org.w3.banana.{PointedGraph, RDFStore, FailedConversion, XSDPrefix, Prefix, RDFOps, RDF}
+import org.w3.banana.binder.{PGBinder, FromLiteral, ToLiteral, RecordBinder}
+import org.w3.banana.{PointedGraph, FailedConversion, XSDPrefix, Prefix, RDFStore, RDFOps, RDF}
 
 class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connection)
   (implicit
@@ -15,7 +14,7 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
 
   import rdfOps._
 
-  private[this] def rdfId(id: PlasmidVectorId): Rdf#URI = makeUri(s"https://denigma.org/$id")   // TODO: find better URL
+  private[this] def rdfId(id: PlasmidVectorId): Rdf#URI = makeUri(s"vector:$id")   // TODO: find better URL
 
   private[this] object binders {
 
@@ -104,7 +103,7 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
     implicit val plasmidInsertBinder = pgb[PlasmidInsert](label, altNames, species, insertSize,
       promoter, genBankId)(PlasmidInsert.apply, PlasmidInsert.unapply)
 
-    val id = property[String](vectors("vector_id"))
+    val id = property[PlasmidVectorId](vectors("vector_id"))
     val backboneId = optional[String](vectors("backbone_id"))
     val comment = optional[String](vectors("comment"))
     val vectorSize = property[Int](vectors("vector_size"))

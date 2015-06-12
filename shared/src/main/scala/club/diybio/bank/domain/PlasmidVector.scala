@@ -1,11 +1,11 @@
-package club.diybio.bank.domain.bio
+package club.diybio.bank.domain
 
 case class PlasmidVector(
   id: PlasmidVectorId,
   backbone: Option[PlasmidVectorId],
   comment: Option[String],
   size: Int,
-  expressionType: Set[TargetSpecie],
+  expressionTypes: Set[TargetSpecie],
   selectableMarker: Set[SelectableMarker],
   growthInfo: BacteriaGrowthInfo,
   sequenceInfo: SequenceInfo,
