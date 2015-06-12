@@ -3,9 +3,11 @@ package club.diybio.bank.domain.bank
 import scala.util.Try
 
 import org.w3.banana.binder.RecordBinder
-import org.w3.banana.{PointedGraph, Prefix, RDF, RDFOps, RDFStore}
+import org.w3.banana.{PointedGraph, RDF, RDFOps, RDFStore}
 
-class BananaDepositorRepository [Rdf <: RDF, Connection](connection: Connection)
+import club.diybio.bank.domain.aux.RDFPrefixes
+
+class BananaDepositorRepository[Rdf <: RDF, Connection](connection: Connection)
   (implicit
     private[this] val rdfOps: RDFOps[Rdf],
     private[this] val rdfStore: RDFStore[Rdf, Try, Connection],
@@ -14,31 +16,30 @@ class BananaDepositorRepository [Rdf <: RDF, Connection](connection: Connection)
 
   import rdfOps._
 
-    private[this] def rdfId(id: DepositorId): Rdf#URI = makeUri(s"depositor:$id")
+  private[this] val prefixes = RDFPrefixes()
+  import prefixes.depositors
 
-    private[this] object binders {
+  private[this] object binders {
 
-      import recordBinder._
+    import recordBinder._
 
-      val depositors = Prefix("depositors", "https://denigma.org/")  // TODO: find better URL. May be some existing schema?
+    val state = property[String](depositors("state"))
+    val city = property[String](depositors("city"))
+    implicit val locationBinder = pgb[Location](state, city)(Location.apply, Location.unapply)
 
-      val state = property[String](depositors("state"))
-      val city = property[String](depositors("city"))
-      implicit val locationBinder = pgb[Location](state, city)(Location.apply, Location.unapply)
+    val id = property[DepositorId](depositors("depositor_id"))
+    val name = property[String](depositors("name"))
+    val email = property[String](depositors("email"))
+    val location = property[Location](depositors("location"))
 
-      val id = property[DepositorId](depositors("depositor_id"))
-      val name = property[String](depositors("name"))
-      val email = property[String](depositors("email"))
-      val location = property[Location](depositors("location"))
-
-      implicit val depositorBinder = pgbWithId[Depositor](d => rdfId(d.id))(id, name,
-        email, location)(Depositor.apply, Depositor.unapply)
-    }
+    implicit val depositorBinder = pgbWithId[Depositor](d => depositors(d.id))(id, name,
+      email, location)(Depositor.apply, Depositor.unapply)
+  }
 
   import binders.depositorBinder
 
   override def getById(id: DepositorId): Option[Depositor] = {
-    val uri = rdfId(id)
+    val uri = depositors(id)
     val g = rdfStore.getGraph(connection, uri).get
     if (g.size == 0) {
       None
@@ -49,15 +50,14 @@ class BananaDepositorRepository [Rdf <: RDF, Connection](connection: Connection)
   }
 
   override def delete(id: DepositorId) {
-    rdfStore.removeGraph(connection, rdfId(id))
+    rdfStore.removeGraph(connection, depositors(id))
   }
 
   override def upsert(depositor: Depositor): Unit = {
     delete(depositor.id)  // this is for upsert semantics. Probably must be surrounded with transaction
 
-    val uri = rdfId(depositor.id)
     val pg = depositor.toPointedGraph
-    val result = rdfStore.appendToGraph(connection, uri, pg.graph)
+    val result = rdfStore.appendToGraph(connection, depositors(depositor.id), pg.graph)
     result.get  // just to throw an exception for Failure
   }
 }

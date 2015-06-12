@@ -13,11 +13,11 @@ object BananaPlasmidVectorRepositoryTest extends TestSuite {
   val repository = new BananaPlasmidVectorRepository[Sesame, RepositoryConnection](sesameRepo.getConnection)
 
   val growthInfo = BacteriaGrowthInfo(
-          resistance = Set(Resistance("ampicillin")),
-          temperature = 37.0,
-          strains = Set(Strain("ecoli")),
-          copyNumber = HIGH_NUMBER
-        )
+    resistance = Set(Resistance("ampicillin")),
+    temperature = 37.0,
+    strains = Set(Strain("ecoli")),
+    copyNumber = HIGH_NUMBER
+  )
 
   val sequenceInfo = SequenceInfo(
     full = Some(DNASeq("AAAAAA")),

@@ -3,7 +3,9 @@ package club.diybio.bank.domain
 import scala.util.{Failure, Success, Try}
 
 import org.w3.banana.binder.{PGBinder, FromLiteral, ToLiteral, RecordBinder}
-import org.w3.banana.{PointedGraph, FailedConversion, XSDPrefix, Prefix, RDFStore, RDFOps, RDF}
+import org.w3.banana.{PointedGraph, FailedConversion, XSDPrefix, RDFStore, RDFOps, RDF}
+
+import club.diybio.bank.domain.aux.RDFPrefixes
 
 class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connection)
   (implicit
@@ -14,13 +16,13 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
 
   import rdfOps._
 
-  private[this] def rdfId(id: PlasmidVectorId): Rdf#URI = makeUri(s"vector:$id")   // TODO: find better URL
+  private[this] val prefixes = RDFPrefixes()
+  import prefixes.vectors
 
   private[this] object binders {
 
     import recordBinder._
 
-    val vectors = Prefix("vectors", "https://denigma.org/")  // TODO: find better URL
     val xsd = XSDPrefix(rdfOps)
 
     class LabeledToLiteral[T <: Labeled] extends ToLiteral[Rdf, T] {
@@ -113,7 +115,7 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
     val sequenceInfo = property[SequenceInfo](vectors("sequence_info"))
     val cloningInfo = optional[RestrictionEnzymeCloningInfo](vectors("cloning_info"))
     val plasmidInsert = optional[PlasmidInsert](vectors("gene_insert"))
-    implicit val plasmidVectorBinder = pgbWithId[PlasmidVector](v => rdfId(v.id))(id, backboneId, comment, vectorSize,
+    implicit val plasmidVectorBinder = pgbWithId[PlasmidVector](v => vectors(v.id))(id, backboneId, comment, vectorSize,
       expressionType, markers, growthInfo, sequenceInfo, cloningInfo,
       plasmidInsert)(PlasmidVector.apply, PlasmidVector.unapply)
   }
@@ -121,7 +123,7 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
   import binders.plasmidVectorBinder
 
   def getById(id: PlasmidVectorId): Option[PlasmidVector] = {
-    val uri = rdfId(id)
+    val uri = vectors(id)
     val g = rdfStore.getGraph(connection, uri).get
     if (g.size == 0) {
       None
@@ -132,15 +134,14 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
   }
 
   def delete(id: PlasmidVectorId) {
-    rdfStore.removeGraph(connection, rdfId(id))
+    rdfStore.removeGraph(connection, vectors(id))
   }
 
   def upsert(plasmidVector: PlasmidVector) {
     delete(plasmidVector.id)  // this is for upsert semantics. Probably must be surrounded with transaction
 
-    val uri = rdfId(plasmidVector.id)
     val pg = plasmidVector.toPointedGraph
-    val result = rdfStore.appendToGraph(connection, uri, pg.graph)
+    val result = rdfStore.appendToGraph(connection, vectors(plasmidVector.id), pg.graph)
     result.get  // just to throw an exception for Failure
   }
 }
