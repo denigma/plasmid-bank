@@ -4,19 +4,24 @@ object Versions extends WebJarsVersions with ScalaJSVersions with RdfVersions wi
 
 	val akkaHttp = "1.0-RC3"
 
-	val ammonite = "0.3.0"
+	val ammonite = "0.3.2"
 
+  	val retry = "0.2.1"
+	
+	val bcrypt = "2.4"
+	
+	val apacheCodec = "1.10"
 }
 
 trait ScalaJSVersions {
 
-	val jqueryFacade = "0.5"
+	val jqueryFacade = "0.6"
 
 	val jsext = "0.5"
 
-	val dom = "0.8.0"
+	val dom = "0.8.1"
 
-	val binding = "0.8.0"
+	val binding = "0.7.15" //note there is a small problem with versions there
 
 }
 
@@ -36,6 +41,8 @@ trait SharedVersions
 	val productCollections = "1.4.2"
 
 	val utest = "0.3.1"
+
+	val scalaTest = "3.0.0-M1"
 }
 
 trait WebJarsVersions {
@@ -44,7 +51,7 @@ trait WebJarsVersions {
 
 	val semanticUI = "1.12.3"
 
-	val selectize = "0.12.0"
+	val selectize = "0.12.1"
 }
 
 trait RdfVersions {

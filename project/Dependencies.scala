@@ -6,7 +6,9 @@ object Dependencies {
 
 	//libs for testing
   lazy val testing = Def.setting(Seq(
-    "com.lihaoyi" %%% "utest" % Versions.utest % "test"
+    "com.lihaoyi" %%% "utest" % Versions.utest % "test",
+
+    "org.scalatest" %%% "scalatest-all" % Versions.scalaTest % "test"
   ))
 
 	//akka-related libs
@@ -18,7 +20,9 @@ object Dependencies {
 
 		"com.typesafe.akka" %% "akka-http-experimental" % Versions.akkaHttp,
 
-		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp
+		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp % "test"
+
+
 	))
 
 	lazy val templates = Def.setting(Seq(
@@ -52,7 +56,15 @@ object Dependencies {
 	))
 
 	lazy val rdf = Def.setting(Seq(
-    "org.w3" %% "banana-sesame" % Versions.bananaRdf
+    		"org.w3" %% "banana-sesame" % Versions.bananaRdf
   ))
+
+	val otherJvm = Def.setting(Seq(
+		"me.lessis" %% "retry" % Versions.retry,
+
+		"com.github.t3hnar" %% "scala-bcrypt" % Versions.bcrypt, //for password hashes
+
+		"commons-codec" % "commons-codec" % Versions.apacheCodec //for base64 encoding
+	))
 
 }

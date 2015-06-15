@@ -17,6 +17,7 @@ object Build extends sbt.Build {
     scalaVersion := Versions.scala,
 	  organization := "club.diybio",
 		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
+		resolvers += sbt.Resolver.bintrayRepo("softprops", "maven"),//for Re-Try
 		testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
 		updateOptions := updateOptions.value.withCachedResolution(true), //to speed up dependency resolution
@@ -55,7 +56,11 @@ object Build extends sbt.Build {
 	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
 		.settings(packageSettings:_*)
 		.settings(
-			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value++Dependencies.rdf.value,
+			libraryDependencies ++= Dependencies.akka.value
+						++Dependencies.templates.value
+						++Dependencies.webjars.value
+						++Dependencies.rdf.value
+						++Dependencies.otherJvm.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
         mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
         resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
