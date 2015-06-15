@@ -7,6 +7,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.stream.ActorFlowMaterializer
+import club.diybio.bank.routes.Router
 import club.diybio.bank.security.UserAlreadyExists
 
 /**
