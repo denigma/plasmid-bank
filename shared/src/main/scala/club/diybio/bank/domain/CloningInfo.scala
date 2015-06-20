@@ -1,4 +1,4 @@
-package club.diybio.bank.domain.bio
+package club.diybio.bank.domain
 
 sealed trait CloningInfo
 
