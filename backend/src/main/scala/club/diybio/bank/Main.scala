@@ -1,6 +1,7 @@
 package club.diybio.bank
 
 import akka.actor.{ActorSystem, _}
+import com.typesafe.config.Config
 
 /**
  * For running as kernel
@@ -8,10 +9,10 @@ import akka.actor.{ActorSystem, _}
 object Main extends App
 {
   implicit val system = ActorSystem()
-
   sys.addShutdownHook(system.shutdown())
-  var main:ActorRef = system.actorOf(Props[MainActor])
-  main ! AppMessages.Start(1234)
 
+  val config: Config = system.settings.config
+  var main:ActorRef = system.actorOf(Props[MainActor])
+  main ! AppMessages.Start(config)
 
 }

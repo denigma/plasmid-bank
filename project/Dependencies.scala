@@ -12,13 +12,11 @@ object Dependencies {
 	//akka-related libs
 	lazy val akka = Def.setting(Seq(
 
-		"com.typesafe.akka" %% "akka-stream-experimental" % Versions.akkaHttp,
+		"org.denigma" %%% "akka-http-extensions" % Versions.akkaHttpExtensions,
 
-		"com.typesafe.akka" %% "akka-http-core-experimental" % Versions.akkaHttp,
+		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp,
 
-		"com.typesafe.akka" %% "akka-http-experimental" % Versions.akkaHttp,
-
-		"com.typesafe.akka" %% "akka-http-testkit-experimental" % Versions.akkaHttp
+		"org.scalatest" %% "scalatest" % Versions.scalatest % "test" //note in scalajs mode clashes with u-test
 	))
 
 	lazy val templates = Def.setting(Seq(
@@ -35,7 +33,9 @@ object Dependencies {
 
 		"org.querki" %%% "querki-jsext" % Versions.jsext, //useful sclalajs extensions
 
-		"org.denigma" %%% "binding" % Versions.binding
+		"org.denigma" %%% "binding" % Versions.binding,
+
+		"org.denigma" %%% "binding-controls" % Versions.bindingControls
 	))
 
 	//dependencies on javascript libs
