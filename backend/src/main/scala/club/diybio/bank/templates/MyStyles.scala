@@ -16,9 +16,6 @@ object MyStyles extends StyleSheet.Standalone {
     &.hover -
       cursor.zoomIn,
 
-    &(media.not.handheld.landscape.maxWidth(640 px)) -
-      width(400 px),
-
     &("span") -
       color.red
     )

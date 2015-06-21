@@ -7,11 +7,10 @@ import org.w3.banana.{PointedGraph, FailedConversion, XSDPrefix, RDFStore, RDFOp
 
 import club.diybio.bank.domain.aux.RDFPrefixes
 
-class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connection)
-  (implicit
-    private[this] val rdfOps: RDFOps[Rdf],
-    private[this] val rdfStore: RDFStore[Rdf, Try, Connection],
-    private[this] val recordBinder: RecordBinder[Rdf])
+class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](getReadConnection: ()=>Connection, getWriteConnection: ()=>Connection)(implicit
+    rdfOps: RDFOps[Rdf],
+    rdfStore: RDFStore[Rdf, Try, Connection],
+    recordBinder: RecordBinder[Rdf])
   extends PlasmidVectorRepository {
 
   import rdfOps._
@@ -124,7 +123,7 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
 
   def getById(id: PlasmidVectorId): Option[PlasmidVector] = {
     val uri = vectors(id)
-    val g = rdfStore.getGraph(connection, uri).get
+    val g = rdfStore.getGraph(getReadConnection(), uri).get
     if (g.size == 0) {
       None
     } else {
@@ -133,15 +132,15 @@ class BananaPlasmidVectorRepository[Rdf <: RDF, Connection](connection: Connecti
     }
   }
 
-  def delete(id: PlasmidVectorId) {
-    rdfStore.removeGraph(connection, vectors(id))
-  }
+  def delete(id: PlasmidVectorId) = rdfStore.removeGraph(getWriteConnection(), vectors(id))
 
-  def upsert(plasmidVector: PlasmidVector) {
+  def upsert(plasmidVector: PlasmidVector) = {
     delete(plasmidVector.id)  // this is for upsert semantics. Probably must be surrounded with transaction
 
     val pg = plasmidVector.toPointedGraph
-    val result = rdfStore.appendToGraph(connection, vectors(plasmidVector.id), pg.graph)
+    import rdfOps._
+
+    val result = rdfStore.appendToGraph(getWriteConnection(), vectors(plasmidVector.id), pg.graph)
     result.get  // just to throw an exception for Failure
   }
 }

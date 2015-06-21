@@ -52,7 +52,8 @@ object Dependencies {
 	))
 
 	lazy val rdf = Def.setting(Seq(
-    "org.w3" %% "banana-sesame" % Versions.bananaRdf
-  ))
+    //"org.w3" %% "banana-sesame" % Versions.bananaRdf
+		"org.w3" %% "banana-bigdata" % Versions.bananaBigdata
+	))
 
 }
