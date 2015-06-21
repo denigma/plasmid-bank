@@ -8,4 +8,4 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.3") //ScalaJS
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.1.1") //templates
 
-addSbtPlugin("com.gilt" % "sbt-dependency-graph-sugar" % "0.7.5") //visual dependency management
+addSbtPlugin("com.gilt" % "sbt-dependency-graph-sugar" % "0.7.5-1") //visual dependency management
