@@ -1,18 +1,25 @@
 package club.diybio.bank.domain.bank
 
+import com.bigdata.rdf.sail.{BigdataSailRepositoryConnection, BigdataSail, BigdataSailRepository}
 import org.openrdf.repository.RepositoryConnection
 import org.openrdf.repository.sail.SailRepository
 import org.openrdf.sail.memory.MemoryStore
-import org.w3.banana.sesame.Sesame
+import org.w3.banana.bigdata.{Bigdata, BigdataConfig}
 import utest._
 import utest.framework.TestSuite
 
 object BananaDepositorRepositoryTest extends TestSuite {
 
-  val sesameRepo = new SailRepository(new MemoryStore())
-  sesameRepo.initialize()
+  val database: BigdataSailRepository = {
+    val sail = new BigdataSail(BigdataConfig.inmemoryConfig)
+    val repo = new BigdataSailRepository(sail)
+    repo.initialize()
+    repo
+  }
 
-  val repository = new BananaDepositorRepository[Sesame, RepositoryConnection](sesameRepo.getConnection)
+  val repository = new BananaDepositorRepository[Bigdata, BigdataSailRepositoryConnection](
+    database.getReadOnlyConnection,
+    database.getUnisolatedConnection)
 
   val depositor = Depositor(id="1", name="Some depositor", email="email@heaven.com",
     location=Location(state="Ukraine", city="Kiev"))

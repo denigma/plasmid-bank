@@ -1,16 +1,24 @@
 package club.diybio.bank.domain
 
+import com.bigdata.rdf.sail.{BigdataSailRepositoryConnection, BigdataSail, BigdataSailRepository}
 import org.openrdf.repository.RepositoryConnection
 import org.openrdf.repository.sail.SailRepository
 import org.openrdf.sail.memory.MemoryStore
-import org.w3.banana.sesame.Sesame
+import org.w3.banana.bigdata.{BigdataConfig, Bigdata}
 import utest._
 
 object BananaPlasmidVectorRepositoryTest extends TestSuite {
-  val sesameRepo = new SailRepository(new MemoryStore())
-  sesameRepo.initialize()
+  val database: BigdataSailRepository = {
+    val sail = new BigdataSail(BigdataConfig.inmemoryConfig)
+    val repo = new BigdataSailRepository(sail)
+    repo.initialize()
+    repo
+  }
 
-  val repository = new BananaPlasmidVectorRepository[Sesame, RepositoryConnection](sesameRepo.getConnection)
+  val repository = new BananaPlasmidVectorRepository[Bigdata, BigdataSailRepositoryConnection](
+    database.getReadOnlyConnection,
+    database.getUnisolatedConnection
+  )
 
   val growthInfo = BacteriaGrowthInfo(
     resistance = Set(Resistance("ampicillin")),

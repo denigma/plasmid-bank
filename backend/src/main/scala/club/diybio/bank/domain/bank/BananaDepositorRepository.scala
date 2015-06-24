@@ -7,11 +7,15 @@ import org.w3.banana.{PointedGraph, RDF, RDFOps, RDFStore}
 
 import club.diybio.bank.domain.aux.RDFPrefixes
 
-class BananaDepositorRepository[Rdf <: RDF, Connection](connection: Connection)
-  (implicit
-    private[this] val rdfOps: RDFOps[Rdf],
-    private[this] val rdfStore: RDFStore[Rdf, Try, Connection],
-    private[this] val recordBinder: RecordBinder[Rdf])
+class BananaDepositorRepository[Rdf <: RDF, Connection]
+    (
+      getReadConnection: ()=>Connection,
+      getWriteConnection: ()=>Connection)
+      (implicit
+       rdfOps: RDFOps[Rdf],
+       rdfStore: RDFStore[Rdf, Try, Connection],
+       recordBinder: RecordBinder[Rdf]
+      )
   extends DepositorRepository {
 
   import rdfOps._
@@ -40,7 +44,7 @@ class BananaDepositorRepository[Rdf <: RDF, Connection](connection: Connection)
 
   override def getById(id: DepositorId): Option[Depositor] = {
     val uri = depositors(id)
-    val g = rdfStore.getGraph(connection, uri).get
+    val g = rdfStore.getGraph(getReadConnection(), uri).get
     if (g.size == 0) {
       None
     } else {
@@ -49,15 +53,15 @@ class BananaDepositorRepository[Rdf <: RDF, Connection](connection: Connection)
     }
   }
 
-  override def delete(id: DepositorId) {
-    rdfStore.removeGraph(connection, depositors(id))
-  }
+  override def delete(id: DepositorId) =  rdfStore.removeGraph(getWriteConnection(), depositors(id))
+
 
   override def upsert(depositor: Depositor): Unit = {
-    delete(depositor.id)  // this is for upsert semantics. Probably must be surrounded with transaction
-
+    val id = depositor.id
+    val uri: Rdf#URI = depositors.apply(depositor.id)
+    delete(id)  // this is for upsert semantics. Probably must be surrounded with transaction
     val pg = depositor.toPointedGraph
-    val result = rdfStore.appendToGraph(connection, depositors(depositor.id), pg.graph)
+    val result = rdfStore.appendToGraph(getWriteConnection(), uri, pg.graph)
     result.get  // just to throw an exception for Failure
   }
 }

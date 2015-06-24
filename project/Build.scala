@@ -17,10 +17,11 @@ object Build extends sbt.Build {
     scalaVersion := Versions.scala,
 	  organization := "club.diybio",
 		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
+		resolvers += sbt.Resolver.bintrayRepo("inthenow", "releases"), //for some transitive dependencies
 		testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
 		updateOptions := updateOptions.value.withCachedResolution(true), //to speed up dependency resolution
-		scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature")
+		scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature","-language:implicitConversions")
   )
 
 	//sbt-native-packager settings to run it as daemon
@@ -60,6 +61,12 @@ object Build extends sbt.Build {
         mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
         resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
 				  packageScalaJSLauncher in Compile in frontend) map( (f1, f2) => Seq(f1.data, f2.data)),
+				resolvers += "Bigdata releases" at "http://systap.com/maven/releases/",
+				resolvers += "apache-repo-releases" at "http://repository.apache.org/content/repositories/releases/",
+				resolvers += "nxparser-repo" at "http://nxparser.googlecode.com/svn/repository/",
+				dependencyOverrides += "org.apache.lucene" % "lucene-core" % Versions.bigdataLuceneVersion, //bigdata uses outdated lucene :_(
+				dependencyOverrides += "org.apache.lucene" % "lucene-analyzers" % Versions.bigdataLuceneVersion, //bigdata uses outdated lucene
+
 			watchSources <++= (watchSources in frontend),
       (managedClasspath in Runtime) += (packageBin in Assets).value
 		) enablePlugins(SbtTwirl,SbtWeb) dependsOn sharedJVM aggregate sharedJVM
