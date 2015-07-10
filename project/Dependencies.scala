@@ -19,23 +19,10 @@ object Dependencies {
 		"org.scalatest" %% "scalatest" % Versions.scalatest % "test" //note in scalajs mode clashes with u-test
 	))
 
-	lazy val templates = Def.setting(Seq(
-		"com.github.japgolly.scalacss" %%% "core" % Versions.scalaCSS,
 
-		"com.github.japgolly.scalacss" %%% "ext-scalatags" %  Versions.scalaCSS
-	))
-  
 	//scalajs libs
 	lazy val sjsLibs= Def.setting(Seq(
-		"org.scala-js" %%% "scalajs-dom" % Versions.dom,
-
-		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade, //scalajs facade for jQuery + jQuery extensions
-
-		"org.querki" %%% "querki-jsext" % Versions.jsext, //useful sclalajs extensions
-
-		"org.denigma" %%% "binding" % Versions.binding,
-
-		"org.denigma" %%% "binding-controls" % Versions.bindingControls
+		"org.querki" %%% "jquery-facade" % Versions.jqueryFacade //scalajs facade for jQuery + jQuery extensions
 	))
 
 	//dependencies on javascript libs
@@ -47,12 +34,17 @@ object Dependencies {
 	))
 
 	//common purpose libs
-	lazy val commonShared = Def.setting(Seq(
-		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens//, //nice lenses for case classes
+	lazy val shared = Def.setting(Seq(
+		"com.softwaremill.quicklens" %%% "quicklens" % Versions.quicklens,//, //nice lenses for case classes
+
+		"org.denigma" %%% "binding-controls" % Versions.bindingControls,
+
+		"com.github.japgolly.scalacss" %%% "core" % Versions.scalaCSS,
+
+		"com.github.japgolly.scalacss" %%% "ext-scalatags" %  Versions.scalaCSS
 	))
 
 	lazy val rdf = Def.setting(Seq(
-
 		"org.w3" %% "banana-bigdata" % Versions.bananaBigdata excludeAll ExclusionRule(organization = "com.github.inthenow")
 	))
 

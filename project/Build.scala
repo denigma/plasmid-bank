@@ -17,9 +17,8 @@ object Build extends sbt.Build {
     scalaVersion := Versions.scala,
 	  organization := "club.diybio",
 		resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"), //for scala-js-binding
-		resolvers += sbt.Resolver.bintrayRepo("inthenow", "releases"), //for some transitive dependencies
 		testFrameworks += new TestFramework("utest.runner.Framework"),
-    libraryDependencies ++= Dependencies.commonShared.value++Dependencies.testing.value,
+    libraryDependencies ++= Dependencies.shared.value++Dependencies.testing.value,
 		updateOptions := updateOptions.value.withCachedResolution(true), //to speed up dependency resolution
 		scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation", "-feature","-language:implicitConversions")
   )
@@ -27,8 +26,8 @@ object Build extends sbt.Build {
 	//sbt-native-packager settings to run it as daemon
 	lazy val packageSettings = Seq(
 		maintainer := "Anton Kulaga <antonkulaga@gmail.com>",
-		packageSummary:= "Runner for gene set enrichment analysis",
-		packageDescription := "Runner for gene set enrichement analysis"
+		packageSummary:= "Plasmid bank",
+		packageDescription := "Plasmid bank"
 		//serverLoading in Debian := Upstart
 	)
 
@@ -37,7 +36,10 @@ object Build extends sbt.Build {
 	  .crossType(CrossType.Pure)
 	  .in(file("shared"))
 	  .settings(commonSettings: _*)
-	  .settings(name := "shared")
+	  .settings(
+			name := "shared"
+		)
+	.jsSettings( jsDependencies += RuntimeDOM % "test" )
 	lazy val sharedJVM = shared.jvm
 	lazy val sharedJS = shared.js
 
@@ -45,18 +47,18 @@ object Build extends sbt.Build {
 	lazy val frontend = Project("frontend", file("frontend"))
 		.settings(commonSettings: _*)
 		.settings(
-		persistLauncher in Compile := true,
-		persistLauncher in Test := false,
-		jsDependencies += RuntimeDOM % "test",
-		testFrameworks += new TestFramework("utest.runner.Framework"),
-		libraryDependencies ++= Dependencies.sjsLibs.value++Dependencies.templates.value
-	) enablePlugins ScalaJSPlugin dependsOn sharedJS aggregate sharedJS
+			persistLauncher in Compile := true,
+			persistLauncher in Test := false,
+			jsDependencies += RuntimeDOM % "test",
+			testFrameworks += new TestFramework("utest.runner.Framework"),
+			libraryDependencies ++= Dependencies.sjsLibs.value
+		)	enablePlugins ScalaJSPlugin dependsOn sharedJS aggregate sharedJS
 
 	//backend project
 	lazy val backend = Project("backend", file("backend"),settings = commonSettings++Revolver.settings)
 		.settings(packageSettings:_*)
 		.settings(
-			libraryDependencies ++= Dependencies.akka.value++Dependencies.templates.value++Dependencies.webjars.value++Dependencies.rdf.value,
+			libraryDependencies ++= Dependencies.akka.value++Dependencies.webjars.value++Dependencies.rdf.value,
 				mainClass in Compile :=Some("club.diybio.bank.Main"),
         mainClass in Revolver.reStart := Some("club.diybio.bank.Main"),
         resourceGenerators in Compile <+=  (fastOptJS in Compile in frontend,
@@ -73,8 +75,8 @@ object Build extends sbt.Build {
 
 	lazy val root = Project("root",file("."),settings = commonSettings)
 		.settings(
-			mainClass in Compile := (mainClass in backend in Compile).value,
-			libraryDependencies += "com.lihaoyi" % "ammonite-repl" % Versions.ammonite cross CrossVersion.full,
-			initialCommands in console := """ammonite.repl.Repl.run("")""" //better console
+			mainClass in Compile := (mainClass in backend in Compile).value
+			//libraryDependencies += "com.lihaoyi" % "ammonite-repl_2.11.6" %  Versions.ammonite,
+			//initialCommands in console := """ammonite.repl.Repl.run("")""" //better console
     ) dependsOn backend aggregate(backend,frontend)
 }
