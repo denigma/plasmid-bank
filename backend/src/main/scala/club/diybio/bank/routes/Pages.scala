@@ -7,10 +7,10 @@ import play.twirl.api.Html
 
 class Pages extends Directives with PJax{
 
-  def defaultPage:Option[Html] = None
+  def defaultPage:Option[Html] = Some(html.search())
 
   def index =  pathSingleSlash{ctx=>
-    ctx.flowMaterializer.executionContext
+    ctx.materializer.executionContext
     ctx.complete {
       HttpResponse(  entity = HttpEntity(MediaTypes.`text/html`, html.index(defaultPage).body  ))
     }
